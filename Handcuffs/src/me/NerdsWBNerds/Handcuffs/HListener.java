@@ -4,6 +4,7 @@ import static org.bukkit.ChatColor.*;
 
 import java.util.Random;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -107,9 +108,13 @@ public class HListener implements Listener{
 				if(cuffed(target)){
 					tell(player, RED + "This player is already cuffed.");
 				}else{
-					if(plugin.usePerms && !plugin.pex.getUser(player).has("hc.cuff")){
+					if(plugin.usePerms && !player.hasPermission("hc.cuff")){
 						tell(player, RED + "You can't have permission to do this.");
 						return;
+					}
+					
+					if(target.hasPermission("hc.immune")){
+						tell(player, ChatColor.RED + "You cannot do that to this player.");
 					}
 					
 					if(inHandAmount(player) >= plugin.cuffAmount){
@@ -140,7 +145,7 @@ public class HListener implements Listener{
 							player.getItemInHand().setAmount(player.getItemInHand().getAmount() - 1);
 					}
 				}else{
-					if(plugin.usePerms && !plugin.pex.getUser(player).has("hc.free")){
+					if(plugin.usePerms && !player.hasPermission("hc.free")){
 						tell(player, RED + "You can't have permission to do this.");
 						return;
 					}

@@ -22,7 +22,6 @@ public class Handcuffs extends JavaPlugin implements CommandExecutor{
 	public int cuffAmount = 7;
 	public boolean cuffTake = true, burnCuffs = true, canPickup = false, nerfDamage = true, canChangeInv = false, reqOP = false, keyTake = false, usePerms = false;
 	
-	public PermissionManager pex;
 	public HListener Listener = new HListener(this);
 	public Server server;
 	public Logger log;
@@ -35,12 +34,6 @@ public class Handcuffs extends JavaPlugin implements CommandExecutor{
 
 		server.getPluginManager().registerEvents(Listener, this);
 		loadConfig();
-
-		if(usePerms){
-			try{
-				pex = PermissionsEx.getPermissionManager();
-			}catch(Exception e){ usePerms = false; }
-		}	
 	}
 	
 	public void onDisable(){
@@ -63,12 +56,16 @@ public class Handcuffs extends JavaPlugin implements CommandExecutor{
 			Player player = (Player) sender;
 
 			if(args[0].equalsIgnoreCase("carry")){
-				if(((reqOP && player.isOp()) || !reqOP) && (!usePerms || pex.getUser(player).has("hc.cmd.carry"))){
+				if(((reqOP && player.isOp()) || !reqOP) && (!usePerms || player.hasPermission("hc.cmd.carry"))){
 						Player target = server.getPlayer(args[1]);
 						
 						if(target==null || !target.isOnline()){
 							Listener.tell(player, ChatColor.RED + "Player not found.");
 							return true;
+						}
+						
+						if(target.hasPermission("hc.immune")){
+							Listener.tell(player, ChatColor.RED + "You cannot do that to this player.");
 						}
 						
 						if(Listener.cuffed(target) && !Listener.cuffed(player) && player.getLocation().distance(target.getLocation()) <= 5){
@@ -88,12 +85,16 @@ public class Handcuffs extends JavaPlugin implements CommandExecutor{
 			}
 
 			if(args[0].equalsIgnoreCase("cuff")){
-				if(((reqOP && player.isOp()) || !reqOP) && (!usePerms || pex.getUser(player).has("hc.cmd.cuff"))){
+				if(((reqOP && player.isOp()) || !reqOP) && (!usePerms || player.hasPermission("hc.cmd.cuff"))){
 						Player target = server.getPlayer(args[1]);
 						
 						if(target==null || !target.isOnline()){
 							Listener.tell(player, ChatColor.RED + "Player not found.");
 							return true;
+						}
+						
+						if(target.hasPermission("hc.immune")){
+							Listener.tell(player, ChatColor.RED + "You cannot do that to this player.");
 						}
 						
 						if(!Listener.cuffed(target)){
@@ -111,7 +112,7 @@ public class Handcuffs extends JavaPlugin implements CommandExecutor{
 			}
 
 			if(args[0].equalsIgnoreCase("free")){
-				if(((reqOP && player.isOp()) || !reqOP) && (!usePerms || pex.getUser(player).has("hc.cmd.free"))){
+				if(((reqOP && player.isOp()) || !reqOP) && (!usePerms || player.hasPermission("hc.cmd.free"))){
 						Player target = server.getPlayer(args[1]);
 						
 						if(target==null || !target.isOnline()){
